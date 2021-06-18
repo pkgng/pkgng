@@ -45,9 +45,13 @@
 #include "private/event.h"
 #include "private/lua.h"
 
+#ifndef DEFFILEMODE
+#define DEFFILEMODE (S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP|S_IROTH|S_IWOTH)
+#endif
+
 extern char **environ;
 
-lua_CFunction
+int
 stack_dump(lua_State *L)
 {
 	int i;
@@ -176,7 +180,9 @@ lua_pkg_copy(lua_State *L)
 	int fd1, fd2;
 	struct timespec ts[2];
 
+#ifdef HAVE_CHFLAGSAT
 	bool install_as_user = (getenv("INSTALL_AS_USER") != NULL);
+#endif
 
 	lua_getglobal(L, "rootfd");
 	int rootfd = lua_tointeger(L, -1);
